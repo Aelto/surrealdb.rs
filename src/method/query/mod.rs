@@ -71,4 +71,53 @@ where
 		self.bindings.insert(key.into(), from_json(json!(value)));
 		self
 	}
+
+	///
+	pub fn bindtwo(mut self, o: impl Into<QueryBindings>) -> Self {
+		let mut bindings: QueryBindings = o.into();
+		self.bindings.append(&mut bindings.bindings);
+		self
+	}
+
+	///
+	pub fn bind_object(self, o: impl Serialize) -> Self {
+		self.bindtwo(json!(o))
+	}
+}
+
+#[derive(Debug)]
+pub struct QueryBindings {
+	bindings: BTreeMap<String, Value>,
+}
+impl QueryBindings {
+	fn new() -> Self {
+		Self {
+			bindings: BTreeMap::new(),
+		}
+	}
+}
+impl<K: Into<String>, V: Serialize> From<(K, V)> for QueryBindings {
+	fn from(value: (K, V)) -> Self {
+		let mut output = Self::new();
+		output.bindings.insert(value.0.into(), from_json(json!(value.1)));
+		output
+	}
+}
+impl From<serde_json::Value> for QueryBindings {
+	fn from(value: serde_json::Value) -> Self {
+		let mut output = Self::new();
+		match value {
+			serde_json::Value::Null => todo!(),
+			serde_json::Value::Bool(_) => todo!(),
+			serde_json::Value::Number(_) => todo!(),
+			serde_json::Value::String(_) => todo!(),
+			serde_json::Value::Array(_) => todo!(),
+			serde_json::Value::Object(object) => {
+				for (key, value) in object {
+					output.bindings.insert(key, from_json(value));
+				}
+			}
+		};
+		output
+	}
 }
