@@ -73,6 +73,13 @@ where
 	}
 
 	///
+	pub fn bindtwo(mut self, o: impl Into<QueryBindings>) -> Self {
+		let mut bindings: QueryBindings = o.into();
+		self.bindings.append(&mut bindings.bindings);
+		self
+	}
+
+	///
 	pub fn bind_object(self, o: impl Serialize) -> Self {
 		self.bindtwo(json!(o))
 	}
