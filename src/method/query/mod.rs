@@ -64,11 +64,102 @@ where
 	}
 
 	/// Binds a parameter to a query
-	pub fn bind<D>(mut self, key: impl Into<String>, value: D) -> Self
-	where
-		D: Serialize,
-	{
-		self.bindings.insert(key.into(), from_json(json!(value)));
+	pub fn bind(mut self, key: impl Into<String>, value: impl Into<sql::Value>) -> Self {
+		self.bindings.insert(key.into(), value.into());
 		self
+	}
+}
+
+///
+pub mod extensions {
+	use super::*;
+
+	///
+	pub trait QueryBindingExt {
+		///
+		fn into_binding_value(self) -> sql::Value;
+	}
+
+	impl<T> QueryBindingExt for T
+	where
+		T: Into<sql::Value>,
+	{
+		fn into_binding_value(self) -> sql::Value {
+			self.into()
+		}
+	}
+
+	///
+	pub trait SqlValueExt {
+		///
+		fn into_value(self) -> sql::Value;
+		///
+		fn to_value(&self) -> sql::Value;
+	}
+
+	impl<T> SqlValueExt for T
+	where
+		T: Into<sql::Thing>,
+		T: Clone,
+	{
+		fn into_value(self) -> sql::Value {
+			self.into().into()
+		}
+
+		fn to_value(&self) -> sql::Value {
+			self.clone().into().into()
+		}
+	}
+
+	///
+	pub trait SqlValueStringExt {
+		///
+		fn into_thing(self) -> std::result::Result<sql::Thing, surrealdb::Error>;
+	}
+	impl<T> SqlValueStringExt for T
+	where
+		T: AsRef<str>,
+	{
+		fn into_thing(self) -> std::result::Result<sql::Thing, surrealdb::Error> {
+			sql::thing(self.as_ref())
+		}
+	}
+}
+///
+
+#[derive(Debug)]
+pub struct QueryBindings {
+	bindings: BTreeMap<String, Value>,
+}
+impl QueryBindings {
+	fn new() -> Self {
+		Self {
+			bindings: BTreeMap::new(),
+		}
+	}
+}
+impl<K: Into<String>, V: Serialize> From<(K, V)> for QueryBindings {
+	fn from(value: (K, V)) -> Self {
+		let mut output = Self::new();
+		output.bindings.insert(value.0.into(), from_json(json!(value.1)));
+		output
+	}
+}
+impl From<serde_json::Value> for QueryBindings {
+	fn from(value: serde_json::Value) -> Self {
+		let mut output = Self::new();
+		match value {
+			serde_json::Value::Null => todo!(),
+			serde_json::Value::Bool(_) => todo!(),
+			serde_json::Value::Number(_) => todo!(),
+			serde_json::Value::String(_) => todo!(),
+			serde_json::Value::Array(_) => todo!(),
+			serde_json::Value::Object(object) => {
+				for (key, value) in object {
+					output.bindings.insert(key, from_json(value));
+				}
+			}
+		};
+		output
 	}
 }
