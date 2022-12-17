@@ -1,7 +1,5 @@
 //! Parameter types
 
-///
-pub mod binding;
 mod credentials;
 mod jwt;
 mod query;

@@ -64,9 +64,8 @@ where
 	}
 
 	/// Binds a parameter to a query
-	pub fn bind(mut self, v: impl crate::param::binding::AppendBinding) -> Self {
-		v.append_binding(&mut self.bindings);
-
+	pub fn bind(mut self, key: impl Into<String>, value: impl Into<sql::Value>) -> Self {
+		self.bindings.insert(key.into(), value.into());
 		self
 	}
 

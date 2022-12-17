@@ -130,8 +130,6 @@ use std::sync::atomic::Ordering;
 use std::sync::Arc;
 use surrealdb::sql::Value;
 
-pub use surrealdb::sql;
-
 /// Result type returned by the client
 pub type Result<T> = std::result::Result<T, Error>;
 

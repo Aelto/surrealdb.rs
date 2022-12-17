@@ -1,5 +1,4 @@
 use serde::Deserialize;
-use surrealdb_rs::param::binding::AppendBinding;
 use surrealdb_rs::param::Root;
 use surrealdb_rs::protocol::Ws;
 use surrealdb_rs::Surreal;
@@ -10,14 +9,6 @@ struct User {
 	id: String,
 	name: String,
 	company: String,
-}
-
-impl AppendBinding for User {
-	fn append_binding(self, bindings: &mut surrealdb_rs::param::binding::BindingMap) {
-		bindings.insert("id".to_owned(), self.id.into());
-		bindings.insert("name".to_owned(), self.name.into());
-		bindings.insert("company".to_owned(), self.company.into());
-	}
 }
 
 #[tokio::main]
@@ -37,11 +28,8 @@ async fn main() -> surrealdb_rs::Result<()> {
 
 	let results = client
 		.query("CREATE user SET name = $name, company = $company")
-		.bind(User {
-			company: "ACME".to_owned(),
-			name: "John".to_owned(),
-			id: String::new(),
-		})
+		.bind("name", "John Doe")
+		.bind("company", "ACME Corporation")
 		.await?;
 
 	// print the created user:

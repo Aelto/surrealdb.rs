@@ -93,7 +93,7 @@ async fn api() {
 	// query
 	let _: QueryResponse = CLIENT.query("SELECT * FROM user").await.unwrap();
 	let _: QueryResponse =
-		CLIENT.query("CREATE user:john SET name = $name").bind(("name", "John Doe")).await.unwrap();
+		CLIENT.query("CREATE user:john SET name = $name").bind("name", "John Doe").await.unwrap();
 	let _: QueryResponse = CLIENT
 		.query(BeginStatement)
 		.query("CREATE account:one SET balance = 135605.16")
