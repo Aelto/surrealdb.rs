@@ -33,6 +33,8 @@ pub enum ErrorKind {
 	Deserialization,
 	/// Serialization error
 	Serialization,
+	/// Binding error
+	BindingError,
 }
 
 impl ErrorKind {
