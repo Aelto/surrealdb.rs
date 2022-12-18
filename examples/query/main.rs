@@ -1,23 +1,15 @@
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use surrealdb_rs::param::binding::AppendBinding;
 use surrealdb_rs::param::Root;
 use surrealdb_rs::protocol::Ws;
 use surrealdb_rs::Surreal;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[allow(dead_code)]
 struct User {
 	id: String,
 	name: String,
 	company: String,
-}
-
-impl AppendBinding for User {
-	fn append_binding(self, bindings: &mut surrealdb_rs::param::binding::BindingMap) {
-		bindings.insert("id".to_owned(), self.id.into());
-		bindings.insert("name".to_owned(), self.name.into());
-		bindings.insert("company".to_owned(), self.company.into());
-	}
 }
 
 #[tokio::main]

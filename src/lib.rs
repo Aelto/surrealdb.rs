@@ -3,6 +3,7 @@
 #![deny(missing_debug_implementations)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![cfg_attr(test, deny(warnings))]
+#![feature(min_specialization)]
 
 //! This SurrealDB library enables simple and advanced querying of a remote database from
 //! server-side code. All connections to SurrealDB are made over WebSockets by default (HTTP is
